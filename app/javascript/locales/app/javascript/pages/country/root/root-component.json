@@ -1,0 +1,10 @@
+[
+  {
+    "id": "app.greeting",
+    "defaultMessage": "Hello, {name}!"
+  },
+  {
+    "id": "app.test",
+    "defaultMessage": "Hello, {name}!"
+  }
+]

@@ -22,6 +22,17 @@ import Icon from 'components/icon';
 import ModalMeta from 'components/modal-meta';
 import ScrollTo from 'components/scroll-to';
 
+import { IntlProvider, FormattedMessage } from 'react-intl';
+import { addLocaleData } from 'react-intl';
+import en from 'react-intl/locale-data/en';
+// import es_MX from 'react-intl/locale-data/es-MX';
+import fr from 'react-intl/locale-data/fr';
+import id from 'react-intl/locale-data/id';
+// import pt_BR from 'react-intl/locale-data/pt-BR';
+import translations from 'locales/index.js';
+
+addLocaleData([...en, ...fr, ...id]);
+
 import closeIcon from 'assets/icons/close.svg';
 import './root-styles.scss';
 
@@ -42,111 +53,131 @@ class Root extends PureComponent {
       widgetAnchor,
       activeWidget,
       locationGeoJson,
-      setMapZoom
+      setMapZoom,
+      locale
     } = this.props;
-
+    const mergedMessages = { ...translations['en'], ...translations[locale] };
     return (
-      <div className="l-country">
-        {showMapMobile && (
-          <Button
-            theme="square theme-button-light"
-            className="close-map-button"
-            onClick={handleShowMapMobile}
-          >
-            <Icon icon={closeIcon} />
-          </Button>
-        )}
-        <div className="content-panel">
-          <Header
-            className="header"
-            location={location}
-            locationOptions={locationOptions}
-            locationNames={locationNames}
-          />
-          <SubNavMenu
-            className="nav"
-            theme="theme-subnav-dark"
-            links={links}
-            checkActive
-          />
-          <div className="widgets">
-            {loading && <Loader className="widgets-loader large" />}
-            {!loading &&
-              widgets &&
-              widgets.length > 0 &&
-              widgets.map(widget => (
-                <Widget
-                  key={widget.name}
-                  widget={widget.name}
-                  active={activeWidget && activeWidget.name === widget.name}
-                />
-              ))}
-            {!loading &&
-              (!widgets || widgets.length === 0) && (
-                <NoContent
-                  className="no-widgets-message large"
-                  message={`${upperFirst(
-                    category
-                  )} data for ${currentLocation} coming soon`}
-                  icon
-                />
-              )}
-          </div>
-        </div>
-        <div className={`map-panel ${showMapMobile ? '-open-mobile' : ''}`}>
-          <Sticky
-            enabled={window.innerWidth > SCREEN_M}
-            bottomBoundary=".l-country"
-          >
-            <div className="map-container">
-              <Map
-                maxZoom={14}
-                minZoom={3}
-                mapOptions={{
-                  mapTypeId: 'GFWdefault',
-                  backgroundColor: '#99b3cc',
-                  disableDefaultUI: true,
-                  panControl: false,
-                  zoomControl: false,
-                  mapTypeControl: false,
-                  scaleControl: true,
-                  streetViewControl: false,
-                  overviewMapControl: false,
-                  tilt: 0,
-                  scrollwheel: false,
-                  center: { lat: -34.397, lng: 150.644 },
-                  zoom: 8
-                }}
-                areaHighlight={locationGeoJson}
-                isParentLoading={isGeostoreLoading}
-                parentLayersKey={
-                  activeWidget && `widget${upperFirst(activeWidget.name)}`
-                }
-              />
+      <IntlProvider
+        locale={locale}
+        messages={mergedMessages}
+      >
+        <div className="l-country">
+          {showMapMobile && (
+            <Button
+              theme="square theme-button-light"
+              className="close-map-button"
+              onClick={handleShowMapMobile}
+            >
+              <Icon icon={closeIcon} />
+            </Button>
+          )}
+          <div className="content-panel">
+            <Header
+              className="header"
+              location={location}
+              locationOptions={locationOptions}
+              locationNames={locationNames}
+            />
+            <SubNavMenu
+              className="nav"
+              theme="theme-subnav-dark"
+              links={links}
+              checkActive
+            />
+            <div className="widgets">
+              {loading && <Loader className="widgets-loader large" />}
+              {!loading &&
+                widgets &&
+                widgets.length > 0 &&
+                widgets.map(widget => (
+                  <Widget
+                    key={widget.name}
+                    widget={widget.name}
+                    active={activeWidget && activeWidget.name === widget.name}
+                  />
+                ))}
+              {!loading &&
+                (!widgets || widgets.length === 0) && (
+                  <NoContent
+                    className="no-widgets-message large"
+                    message={`${upperFirst(
+                      category
+                    )} data for ${currentLocation} coming soon`}
+                    icon
+                  />
+                )}
             </div>
-          </Sticky>
-        </div>
-        {!isGeostoreLoading && (
-          <MapControls
-            className="map-controls"
-            stickyOptions={{ enabled: true, top: 15 }}
-            handleZoomIn={() => setMapZoom({ value: 1, sum: true })}
-            handleZoomOut={() => setMapZoom({ value: -1, sum: true })}
+          </div>
+          <FormattedMessage
+            id='app.greeting'
+            defaultMessage='Hello, {name}!'
+            values={{
+                name: 'Eric'
+            }}
           />
-        )}
-        <Share />
-        <ModalMeta />
-        {widgetAnchor && <ScrollTo target={widgetAnchor} />}
-        <CountryDataProvider />
-        <WhitelistsProvider />
-        <Meta
-          page={
-            locationNames &&
-            locationNames.country &&
-            locationNames.country.label
-          }
-        />
-      </div>
+          <FormattedMessage
+            id='app.test'
+            defaultMessage='Hello, {name}!'
+            values={{
+                name: 'Eric'
+            }}
+          />
+          <div className={`map-panel ${showMapMobile ? '-open-mobile' : ''}`}>
+            <Sticky
+              enabled={window.innerWidth > SCREEN_M}
+              bottomBoundary=".l-country"
+            >
+              <div className="map-container">
+                <Map
+                  maxZoom={14}
+                  minZoom={3}
+                  mapOptions={{
+                    mapTypeId: 'GFWdefault',
+                    backgroundColor: '#99b3cc',
+                    disableDefaultUI: true,
+                    panControl: false,
+                    zoomControl: false,
+                    mapTypeControl: false,
+                    scaleControl: true,
+                    streetViewControl: false,
+                    overviewMapControl: false,
+                    tilt: 0,
+                    scrollwheel: false,
+                    center: { lat: -34.397, lng: 150.644 },
+                    zoom: 8
+                  }}
+                  areaHighlight={locationGeoJson}
+                  isParentLoading={isGeostoreLoading}
+                  parentLayersKey={
+                    activeWidget && `widget${upperFirst(activeWidget.name)}`
+                  }
+                />
+              </div>
+            </Sticky>
+          </div>
+          {!isGeostoreLoading && (
+            <MapControls
+              className="map-controls"
+              stickyOptions={{ enabled: true, top: 15 }}
+              handleZoomIn={() => setMapZoom({ value: 1, sum: true })}
+              handleZoomOut={() => setMapZoom({ value: -1, sum: true })}
+            />
+          )}
+          <Share />
+          <ModalMeta />
+          {widgetAnchor && <ScrollTo target={widgetAnchor} />}
+          <CountryDataProvider />
+          <WhitelistsProvider />
+          <Meta
+            page={
+              locationNames &&
+              locationNames.country &&
+              locationNames.country.label
+            }
+          />
+        </div>
+      </IntlProvider>
     );
   }
 }

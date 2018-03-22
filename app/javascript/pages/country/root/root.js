@@ -74,7 +74,10 @@ const mapStateToProps = ({ root, countryData, whitelists, location }) => {
       countryWhitelistLoading ||
       regionWhitelistLoading ||
       waterBodiesWhitelistLoading,
-    activeWidget: getActiveWidget(widgetData)
+    activeWidget: getActiveWidget(widgetData),
+    locale: (location.query && location.query.lang) ||
+      localStorage.getItem('txlive:selectedlang') ||
+      'en'
   };
 };
 
