@@ -23,41 +23,21 @@ export default function withIntl(Page) {
   const IntlPage = injectIntl(Page);
 
   return class PageWithIntl extends React.Component {
-
-    static propTypes = {
-      language: PropTypes.string
+    constructor() {
+      super();
+      this.state = {
+        lang: 'en'
+      }
     }
 
-    // static async getInitialProps(context) {
-    //   let props;
-    //   if (typeof Page.getInitialProps === 'function') {
-    //     props = await Page.getInitialProps(context);
-    //   }
-
-    //   // Get the `locale` from the request object on the server.
-    //   // In the browser, use the same values that the server serialized.
-    //   const { req } = context;
-
-    //   let language;
-
-    //   if (req) {
-    //     language =
-    //       req.query.language ||
-    //       req.cookies.language ||
-    //       req.locale.language ||
-    //       'en';
-    //   } else {
-    //     language = Cookies.get('language') || 'en';
-    //   }
-
-    //   language = (Object.keys(LANGUAGES).includes(language)) ? language : 'en';
-
-    //   // Always update the current time on page load/transition because the
-    //   // <IntlProvider> will be a new instance even with pushState routing.
-    //   return { language, now, ...props };
-    // }
+    componentDidMount() {
+      Transifex.live.onTranslatePage((language_code) => {
+        this.setState({ lang: language_code });
+      });
+    }
 
     render() {
+      console.log('intl', this.props);
       return (
         <IntlProvider
           locale="en"

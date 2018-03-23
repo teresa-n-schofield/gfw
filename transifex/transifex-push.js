@@ -6,12 +6,13 @@ require('dotenv').config();
 const translations = require(`../${process.env.LOCALES_PATH}/en.json`);
 
 // Endpoint for source language translations
-const url = `${process.env.TRANSIFEX_URL}/${process.env.TRANSIFEX_PROJECT}/resource/${process.env.TRANSIFEX_SLUG}/content`;
+const url = `${process.env.TRANSIFEX_URL}/${process.env.TRANSIFEX_PROJECT}/resource/${process.env.TRANSIFEX_SLUG}/content?format=json`;
 
 // Request config
 const json = {
     "content": JSON.stringify(translations)
 };
+console.log(json);
 const fetchConfig = {
     headers: {
         Authorization: `Basic ${process.env.TRANSIFEX_API_TOKEN}`,
@@ -24,11 +25,9 @@ const fetchConfig = {
 // PUT en.json
 fetch(url, fetchConfig)
     .then(function(res) {
-        console.log(res);
         return res.json();
     })
     .then(function(json) {
-        console.log(json);
         console.log('Translation successfully uploaded!');
     })
     .catch((err) => {

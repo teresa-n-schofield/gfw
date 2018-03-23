@@ -1,4 +1,4 @@
 import Component from './widget-dynamic-sentence-component';
-import withIntl from 'hoc/intl';
+import { injectIntl } from 'react-intl';
 
-export default withIntl(Component);
+export default injectIntl(Component);

@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import replace from 'lodash/replace';
 import withIntl from 'hoc/intl';
+
 import {
   getActiveAdmin,
   getAdminsOptions,
@@ -74,7 +75,8 @@ const mapStateToProps = ({ root, countryData, whitelists, location }) => {
       countryWhitelistLoading ||
       regionWhitelistLoading ||
       waterBodiesWhitelistLoading,
-    activeWidget: getActiveWidget(widgetData)
+    activeWidget: getActiveWidget(widgetData),
+    Transifex: window.Transifex
   };
 };
 
@@ -99,4 +101,4 @@ RootContainer.propTypes = {
 
 export { actions, reducers, initialState };
 
-export default withIntl(connect(mapStateToProps, actions)(RootContainer));
+export default connect(mapStateToProps, actions)(withIntl(RootContainer));

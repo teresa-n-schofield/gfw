@@ -38,6 +38,7 @@ fetch(langUrl, fetchConfig)
                     return res.json();
                 })
                 .then(function(json) {
+                    console.log(json);
                     fs.writeFile(`${process.env.LOCALES_PATH}/${lang}.json`, JSON.stringify(JSON.parse(json.content), null, 4), (err) => {
                         if (err) throw err;
                         console.log(`Translations for ${lang} successfully saved!`);

@@ -2,6 +2,7 @@ import { createSelector } from 'reselect';
 import isEmpty from 'lodash/isEmpty';
 import { getColorPalette } from 'utils/data';
 import { format } from 'd3-format';
+import { defineMessages } from 'react-intl';
 
 // get list data
 const getData = state => state.data;
@@ -10,6 +11,17 @@ const getLocationNames = state => state.locationNames;
 const getActiveIndicator = state => state.activeIndicator;
 const getIndicatorWhitelist = state => state.whitelist;
 const getColors = state => state.colors;
+
+defineMessages({
+  default: {
+    id: 'widget.treeCover.default',
+    defaultMessage: 'As of {year}, {location} had {extent} of tree cover.'
+  },
+  withLocation: {
+    id: 'widget.treeCover.withLocation',
+    defaultMessage: 'As of {year}, {subLocation} in {location} had {extent} of tree cover.'
+  }
+});
 
 // get lists selected
 export const getTreeCoverData = createSelector(
@@ -56,20 +68,22 @@ export const getSentenceParams = createSelector(
     const { cover } = data;
     const locationLabel = locationNames.current && locationNames.current.label;
     return {
-      year: {
-        value: settings.extentYear
-      },
-      location: {
-        value: locationLabel
-      },
-      subLocation: {
-        value: indicator.label
-      },
-      extent: {
-        value: cover,
-        format: '.3s'
-      },
-      sentenceType: indicator.value === 'gadm28' ? 'default' : 'withLocation'
+      id: `widget.treeCover.${indicator.value === 'gadm28' ? 'default' : 'withLocation'}`,
+      values: {
+        year: {
+          value: settings.extentYear
+        },
+        location: {
+          value: locationLabel
+        },
+        subLocation: {
+          value: indicator.label
+        },
+        extent: {
+          value: cover,
+          format: '.3s'
+        }
+      }
     };
   }
 );

@@ -15,7 +15,7 @@ class WidgetTreeCover extends PureComponent {
       <div className="c-widget-tree-cover">
         {parsedData && (
           <div>
-            <WidgetDynamicSentence params={sentence} widget={widget} />
+            <WidgetDynamicSentence data={sentence} />
             <div className="pie-chart-container">
               <WidgetPieChartLegend
                 className="cover-legend"

@@ -1,3 +1,4 @@
 {
-    "Global Forest Watch": "Global Forest Watch"
+    "As of": "As of",
+    "As of {year}, {subLocation} in {location} had {extent} of tree cover.": "As of {year}, {subLocation} in {location} had {extent} of tree cover."
 }

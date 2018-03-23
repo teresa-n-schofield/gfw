@@ -7,17 +7,18 @@ import './widget-dynamic-sentence-styles.scss';
 
 class WidgetDynamicSentence extends PureComponent {
   render() {
-    const { className, widget, params, intl, sentence } = this.props;
-    const values = {};
+    const { className, widget, data, intl, sentence } = this.props;
     let formattedSentence = sentence;
-    if (!formattedSentence && params) {
-      Object.keys(params).forEach(k => {
-        const { value, format, sentenceType } = params[k];
-        values[k] = `<b>${format ? numFormat(format)(value) : value}</b>`
+    if (data) {
+      const { id, values } = data;
+      const parsedValues = {};
+      Object.keys(values).forEach(k => {
+        const { value, format, sentenceType } = values[k];
+        parsedValues[k] = `<b>${format ? numFormat(format)(value) : value}</b>`
       });
       formattedSentence = intl.formatMessage({
-        id: `widget.${widget}.${params.sentenceType}`
-      }, values);
+        id
+      }, parsedValues);
     }
 
     return (
