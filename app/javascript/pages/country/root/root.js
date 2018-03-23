@@ -2,7 +2,7 @@ import { createElement, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import replace from 'lodash/replace';
-
+import withIntl from 'hoc/intl';
 import {
   getActiveAdmin,
   getAdminsOptions,
@@ -74,10 +74,7 @@ const mapStateToProps = ({ root, countryData, whitelists, location }) => {
       countryWhitelistLoading ||
       regionWhitelistLoading ||
       waterBodiesWhitelistLoading,
-    activeWidget: getActiveWidget(widgetData),
-    locale: (location.query && location.query.lang) ||
-      localStorage.getItem('txlive:selectedlang') ||
-      'en'
+    activeWidget: getActiveWidget(widgetData)
   };
 };
 
@@ -102,4 +99,4 @@ RootContainer.propTypes = {
 
 export { actions, reducers, initialState };
 
-export default connect(mapStateToProps, actions)(RootContainer);
+export default withIntl(connect(mapStateToProps, actions)(RootContainer));

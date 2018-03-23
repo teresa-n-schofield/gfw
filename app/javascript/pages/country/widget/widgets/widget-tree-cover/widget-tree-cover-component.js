@@ -9,13 +9,13 @@ import './widget-tree-cover-styles.scss';
 
 class WidgetTreeCover extends PureComponent {
   render() {
-    const { parsedData, settings, sentence } = this.props;
+    const { parsedData, settings, sentence, widget } = this.props;
 
     return (
       <div className="c-widget-tree-cover">
         {parsedData && (
           <div>
-            <WidgetDynamicSentence sentence={sentence} />
+            <WidgetDynamicSentence params={sentence} widget={widget} />
             <div className="pie-chart-container">
               <WidgetPieChartLegend
                 className="cover-legend"
@@ -43,7 +43,7 @@ class WidgetTreeCover extends PureComponent {
 WidgetTreeCover.propTypes = {
   parsedData: PropTypes.array,
   settings: PropTypes.object.isRequired,
-  sentence: PropTypes.string.isRequired
+  sentence: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
 };
 
 export default WidgetTreeCover;

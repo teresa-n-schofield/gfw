@@ -7,10 +7,8 @@ import pt_BR from './pt_BR.json';
 
 const translations = {
   en: { ...en },
-  es_MX: { ...es_MX },
   fr: { ...fr },
-  id: { ...id },
-  pt_BR: { ...pt_BR }
+  id: { ...id }
 };
 
 export default translations;

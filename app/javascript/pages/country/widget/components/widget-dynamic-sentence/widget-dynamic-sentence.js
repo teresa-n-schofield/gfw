@@ -1,3 +1,4 @@
 import Component from './widget-dynamic-sentence-component';
+import withIntl from 'hoc/intl';
 
-export default Component;
+export default withIntl(Component);

@@ -1,3 +1,4 @@
 {
-    "Global Forest Watch": "Global Forest Watch"
+    "widget.treeCover.default": "As of {year}, {location} had {extent} of tree cover.",
+    "widget.treeCover.withLocation": "As of {year}, {subLocation} in {location} had {extent} of tree cover."
 }

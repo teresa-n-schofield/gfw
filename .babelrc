@@ -33,9 +33,6 @@
         "spec": true
       }
     ],
-    "transform-es2015-arrow-functions",
-    ["react-intl", {
-      "messagesDir": "./app/javascript/locales"
-    }]
+    "transform-es2015-arrow-functions"
   ]
 }

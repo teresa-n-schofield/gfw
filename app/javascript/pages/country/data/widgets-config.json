@@ -13,6 +13,10 @@
       "sortOrder": {
         "summary": 1,
         "land-cover": 1
+      },
+      "sentences": {
+        "default": "As of {year}, {location} had {extent} of tree cover.",
+        "withSubLocation": "As of {year}, {subLocation} in {location} had {extent} of tree cover."
       }
     },
     "settings": {

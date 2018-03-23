@@ -5,7 +5,7 @@ import isEqual from 'lodash/isEqual';
 
 import actions from './widget-tree-cover-actions';
 import reducers, { initialState } from './widget-tree-cover-reducers';
-import { getTreeCoverData, getSentence } from './widget-tree-cover-selectors';
+import { getTreeCoverData, getSentenceParams } from './widget-tree-cover-selectors';
 import WidgetTreeCoverComponent from './widget-tree-cover-component';
 
 const mapStateToProps = (
@@ -29,7 +29,7 @@ const mapStateToProps = (
     regions,
     data,
     parsedData: getTreeCoverData(selectorData),
-    sentence: getSentence(selectorData)
+    sentence: getSentenceParams(selectorData)
   };
 };
 
