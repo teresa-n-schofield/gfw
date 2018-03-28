@@ -76,11 +76,21 @@ const mapStateToProps = ({ root, countryData, whitelists, location }) => {
       regionWhitelistLoading ||
       waterBodiesWhitelistLoading,
     activeWidget: getActiveWidget(widgetData),
-    Transifex: window.Transifex
+    Transifex: window.Transifex,
+    lang: root.lang
   };
 };
 
 class RootContainer extends PureComponent {
+  componentWillReceiveProps(nextProps) {
+    const { Transifex, setLang } = nextProps;
+    if (Transifex !== this.props.Transifex) {
+      Transifex.live.onTranslatePage(language_code => {
+        setLang(language_code);
+      });
+    }
+  }
+
   handleShowMapMobile = () => {
     this.props.setShowMapMobile(!this.props.showMapMobile);
   };
@@ -88,6 +98,7 @@ class RootContainer extends PureComponent {
   render() {
     return createElement(RootComponent, {
       ...this.props,
+      ...this.state,
       handleShowMapMobile: this.handleShowMapMobile,
       handleScrollCallback: this.handleScrollCallback
     });
@@ -96,7 +107,9 @@ class RootContainer extends PureComponent {
 
 RootContainer.propTypes = {
   setShowMapMobile: PropTypes.func,
-  showMapMobile: PropTypes.bool
+  showMapMobile: PropTypes.bool,
+  Transifex: PropTypes.object,
+  setLang: PropTypes.func
 };
 
 export { actions, reducers, initialState };

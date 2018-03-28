@@ -1,6 +1,7 @@
 export const initialState = {
   gfwHeaderHeight: 58,
-  showMapMobile: false
+  showMapMobile: false,
+  lang: 'en'
 };
 
 const setFixedMapStatus = (state, { payload }) => ({
@@ -13,7 +14,13 @@ const setShowMapMobile = (state, { payload }) => ({
   showMapMobile: payload
 });
 
+const setLang = (state, { payload }) => ({
+  ...state,
+  lang: payload
+});
+
 export default {
   setFixedMapStatus,
-  setShowMapMobile
+  setShowMapMobile,
+  setLang
 };

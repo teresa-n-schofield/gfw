@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import { IntlProvider, addLocaleData, injectIntl } from 'react-intl';
@@ -14,7 +14,7 @@ const MESSAGES = { en: langEn, fr: langFr };
 
 // Register React Intl's locale data for the user's locale in the browser
 if (typeof window !== 'undefined') {
-  Object.keys(LANGUAGES).forEach((lang) => {
+  Object.keys(LANGUAGES).forEach(lang => {
     addLocaleData(LANGUAGES[lang]);
   });
 }
@@ -22,26 +22,16 @@ if (typeof window !== 'undefined') {
 export default function withIntl(Page) {
   const IntlPage = injectIntl(Page);
 
-  return class PageWithIntl extends React.Component {
-    constructor() {
-      super();
-      this.state = {
-        lang: 'en'
-      }
-    }
-
-    componentDidMount() {
-      Transifex.live.onTranslatePage((language_code) => {
-        this.setState({ lang: language_code });
-      });
-    }
-
+  return class PageWithIntl extends PureComponent {
+    static propTypes = {
+      lang: PropTypes.string
+    };
     render() {
-      console.log('intl', this.props);
+      const { lang } = this.props;
       return (
         <IntlProvider
-          locale="en"
-          messages={MESSAGES['en']}
+          locale={lang}
+          messages={MESSAGES[lang]}
           defaultLocale="en"
         >
           <IntlPage {...this.props} />

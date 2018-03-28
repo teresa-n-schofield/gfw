@@ -1,4 +1,4 @@
 {
-    "As of": "As of",
-    "As of {year}, {subLocation} in {location} had {extent} of tree cover.": "As of {year}, {subLocation} in {location} had {extent} of tree cover."
+    "widget.treeCover.default": "As of {year}, {location} had {extent} of tree cover.",
+    "widget.treeCover.withLocation": "As of {year}, {subLocation} in {location} had {extent} of tree cover."
 }
