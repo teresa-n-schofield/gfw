@@ -12,7 +12,7 @@ class WidgetDynamicSentence extends PureComponent {
       Object.keys(params).forEach(p => {
         formattedSentence = formattedSentence.replace(
           `{${p}}`,
-          `<b ${
+          `<b class="notranslate" ${
             typeof params[p] === 'object' && params[p] && params[p].color
               ? `style="color: ${params[p].color};`
               : ''
