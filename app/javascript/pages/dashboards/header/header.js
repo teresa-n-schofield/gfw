@@ -32,6 +32,9 @@ const mapStateToProps = ({ countryData, location, header, widgets, cache }) => {
     externalLinks.find(l =>
       deburrUpper(l.title).indexOf(deburrUpper('forest atlas'))
     );
+  const downloadLink = `http://gfw2-data.s3.amazonaws.com/country/umd_country_stats${
+    country ? '/iso' : ''
+  }/tree_cover_stats_2016${country ? `_${country}` : ''}.xlsx`;
   const locationOptions = { ...countryData };
   const locationNames = getAdminsSelected({ ...countryData, ...location });
   const cacheLoading = cache.cacheListLoading;
@@ -40,6 +43,7 @@ const mapStateToProps = ({ countryData, location, header, widgets, cache }) => {
     ...header,
     loading: countryDataLoading || header.loading,
     cacheLoading,
+    downloadLink,
     forestAtlasLink,
     externalLinks,
     locationNames,
@@ -61,11 +65,15 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     Object.keys(query).forEach(key => {
       if (widgets.map(w => w.name).indexOf(key) > -1) {
         const widget = widgets.find(w => w.name === key);
-        widgetQueries[key] = encodeStateForUrl({
-          ...decodeUrlForState(query[key]),
-          forestType: widget.settings.forestType || '',
-          landCategory: widget.settings.landCategory || ''
-        });
+        if (widget.settings) {
+          const { forestType, landCategory, page } = widget.settings;
+          widgetQueries[key] = encodeStateForUrl({
+            ...decodeUrlForState(query[key]),
+            forestType: forestType || '',
+            landCategory: landCategory || '',
+            ...(!!(page === 0) && { page: 0 })
+          });
+        }
       }
     });
   }
