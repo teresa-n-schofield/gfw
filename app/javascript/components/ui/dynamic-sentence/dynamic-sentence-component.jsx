@@ -10,16 +10,19 @@ class WidgetDynamicSentence extends PureComponent {
     let formattedSentence = sentence;
     if (params) {
       Object.keys(params).forEach(p => {
+        const text =
+          (typeof params[p] === 'object' && params[p] && params[p].value) ||
+          params[p];
+        const translation =
+          (window.Transifex && window.Transifex.live.translateText(text)) ||
+          text;
         formattedSentence = formattedSentence.replace(
           `{${p}}`,
-          `<b class="notranslate" ${
+          `<b id="mantrans" class="notranslate" ${
             typeof params[p] === 'object' && params[p] && params[p].color
               ? `style="color: ${params[p].color};`
               : ''
-          }">${(typeof params[p] === 'object' &&
-            params[p] &&
-            params[p].value) ||
-            params[p]}</b>`
+          }">${translation}</b>`
         );
       });
     }
