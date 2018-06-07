@@ -1,10 +1,13 @@
 import request from 'utils/request';
 
 const REQUEST_URL = `${process.env.CARTO_API_URL}/sql?q=`;
+const PROD_URL = `${
+  process.env.GFW_API_HOST_NEW_API
+}/query/134caa0a-21f7-451d-a7fe-30db31a424aa?sql=`;
 
 const SQL_QUERIES = {
   getCountries:
-    'SELECT iso, country as name FROM umd_nat_staging GROUP BY iso, name ORDER BY name',
+    "SELECT {lang} as name, iso FROM gadm28_countries WHERE {lang} != '' ORDER BY {lang} ASC",
   getFAOCountries:
     'SELECT DISTINCT country AS iso, name FROM table_1_forest_area_and_characteristics',
   getRegions:
@@ -19,8 +22,19 @@ const SQL_QUERIES = {
     'SELECT latitude_average, longitude_average, alpha_3_code as iso FROM country_list_iso_3166_codes_latitude_longitude'
 };
 
-export const getCountriesProvider = () => {
-  const url = `${REQUEST_URL}${SQL_QUERIES.getCountries}`;
+export const getCountriesProvider = lang => {
+  const langKeys = {
+    en: 'name_engli',
+    es_MX: 'name_spani',
+    fr: 'name_frenc',
+    pt_BR: 'name_engli',
+    id: 'name_engli',
+    zh: 'name_chine'
+  };
+  const url = `${PROD_URL}${SQL_QUERIES.getCountries}`.replace(
+    new RegExp('{lang}', 'g'),
+    langKeys[lang]
+  );
   return request.get(url);
 };
 

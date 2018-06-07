@@ -6,6 +6,7 @@ import { SCREEN_M, SCREEN_MOBILE } from 'utils/constants';
 import CacheProvider from 'providers/cache-provider';
 import CountryDataProvider from 'providers/country-data-provider';
 import WhitelistsProvider from 'providers/whitelists-provider';
+import LangProvider from 'providers/lang-provider';
 
 import Meta from 'components/meta';
 import Widgets from 'components/widgets';
@@ -86,6 +87,7 @@ class Page extends PureComponent {
         <CacheProvider />
         <CountryDataProvider />
         <WhitelistsProvider />
+        <LangProvider />
         <Meta
           title={title}
           description="Data about forest change, tenure, forest related employment and land use in"

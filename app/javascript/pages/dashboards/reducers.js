@@ -16,6 +16,7 @@ import * as WidgetsComponent from 'components/widgets';
 import * as cacheProviderComponent from 'providers/cache-provider';
 import * as countryDataProviderComponent from 'providers/country-data-provider';
 import * as whitelistsProviderComponent from 'providers/whitelists-provider';
+import * as langProviderComponent from 'providers/lang-provider';
 
 // Component Reducers
 const componentsReducers = {
@@ -30,7 +31,8 @@ const componentsReducers = {
 const providersReducers = {
   cache: handleActions(cacheProviderComponent),
   countryData: handleActions(countryDataProviderComponent),
-  whitelists: handleActions(whitelistsProviderComponent)
+  whitelists: handleActions(whitelistsProviderComponent),
+  lang: handleActions(langProviderComponent)
 };
 
 export default combineReducers({

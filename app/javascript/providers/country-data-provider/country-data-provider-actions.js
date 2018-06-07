@@ -31,21 +31,21 @@ export const setCountryLinks = createAction('setCountryLinks');
 
 export const getCountries = createThunkAction(
   'getCountries',
-  () => dispatch => {
+  lang => dispatch => {
     dispatch(setCountriesLoading(true));
     axios
-      .all([getCountriesProvider(), getFAOCountriesProvider()])
+      .all([getCountriesProvider(lang), getFAOCountriesProvider()])
       .then(
         axios.spread((gadm28Countries, faoCountries) => {
           const allCountries = uniqBy(
-            [...gadm28Countries.data.rows, ...faoCountries.data.rows],
+            [...gadm28Countries.data.data, ...faoCountries.data.rows],
             'iso'
           );
           const countries = uniqBy(
             allCountries.filter(c => c.iso !== 'XCA'),
             'iso'
           );
-          dispatch(setGadmCountries(gadm28Countries.data.rows));
+          dispatch(setGadmCountries(gadm28Countries.data.data));
           dispatch(setFAOCountries(faoCountries.data.rows));
           dispatch(setCountries(countries));
           dispatch(setCountriesLoading(false));

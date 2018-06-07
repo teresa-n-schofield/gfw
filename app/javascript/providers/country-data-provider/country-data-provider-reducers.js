@@ -25,7 +25,8 @@ const mapLocations = locations => {
     if (location.iso || location.id > 0) {
       locationsMapped.push({
         label: location.name,
-        value: location.iso || location.id
+        value: location.iso || location.id,
+        ...location
       });
     }
   });

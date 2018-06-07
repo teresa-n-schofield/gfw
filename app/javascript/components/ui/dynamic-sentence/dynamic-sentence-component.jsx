@@ -13,9 +13,9 @@ class WidgetDynamicSentence extends PureComponent {
         const text =
           (typeof params[p] === 'object' && params[p] && params[p].value) ||
           params[p];
-        const translation =
-          (window.Transifex && window.Transifex.live.translateText(text)) ||
-          text;
+        const translation = text;
+        // (window.Transifex && window.Transifex.live.translateText(text)) ||
+        // text;
         formattedSentence = formattedSentence.replace(
           `{${p}}`,
           `<b id="mantrans" class="notranslate" ${
