@@ -1,4 +1,4 @@
-import axios from 'axios';
+import request from 'utils/request';
 
 const REQUEST_URL = `${process.env.CARTO_API_URL}/sql?q=`;
 
@@ -6,21 +6,20 @@ const SQL_QUERIES = {
   aboutImpacts: 'SELECT * FROM gfw_outcomes_for_about_page_images',
   allProjects:
     'SELECT a.*, b.latitude_average, b.longitude_average FROM gfw_use_cases_for_about_page a, country_list_iso_3166_codes_latitude_longitude b WHERE a.country_iso_code = b.alpha_3_code',
-  sgfProjects:
-    'SELECT%20a.*%2C%20b.latitude_average%2C%20b.longitude_average%20FROM%20gfw_use_cases_for_about_page%20a%2C%20country_list_iso_3166_codes_latitude_longitude%20b%20WHERE%20a.country_iso_code%20%3D%20b.alpha_3_code%20AND%20sgf=true'
+  sgfProjects: 'SELECT * FROM sgf_stories'
 };
 
 export const fetchAboutProjects = () => {
   const url = `${REQUEST_URL}${SQL_QUERIES.aboutImpacts}`;
-  return axios.get(url);
+  return request.get(url);
 };
 
 export const fetchAllProjects = () => {
   const url = `${REQUEST_URL}${SQL_QUERIES.allProjects}`;
-  return axios.get(url);
+  return request.get(url);
 };
 
 export const fetchSGFProjects = () => {
   const url = `${REQUEST_URL}${SQL_QUERIES.sgfProjects}`;
-  return axios.get(url);
+  return request.get(url);
 };

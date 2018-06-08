@@ -2,7 +2,9 @@ import { createElement, PureComponent } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import difference from 'lodash/difference';
+import findIndex from 'lodash/findIndex';
 
 import Layers from './assets/layers';
 import GFWdefault from './assets/maptypes/GFWdefault';
@@ -10,56 +12,64 @@ import GFWLabels from './assets/maptypes/GFWLabels';
 
 import MapComponent from './map-component';
 import actions from './map-actions';
+import reducers, { initialState } from './map-reducers';
 import { getLayers } from './map-selectors';
 
-export { initialState } from './map-reducers';
-export { default as reducers } from './map-reducers';
-export { default as actions } from './map-actions';
-
 const mapStateToProps = (
-  state,
-  { isParentLoading, layers, parentLayersKey }
+  { map, countryData, widgets, cache },
+  { widgetKey }
 ) => {
-  const { map, countryData } = state;
-  const parentSettings =
-    state[parentLayersKey] && state[parentLayersKey].settings;
-  const activeLayers =
-    layers || (parentSettings && parentSettings.layers) || map.layers;
+  const widget = widgets[widgetKey];
+  const widgetSettings = widget && widget.settings;
+  const activeLayers = widgetSettings && widgetSettings.layers;
+
   return {
-    loading: map.loading || isParentLoading,
-    error: map.error,
-    bounds: countryData.geostore.bounds,
-    layerSpec: map.layerSpec,
-    settings: { ...map.settings, ...parentSettings },
-    options: map.options,
+    ...map,
+    ...countryData.geostore,
+    loading:
+      map.loading || cache.cacheListLoading || countryData.isGeostoreLoading,
+    cacheLoading: cache.cacheListLoading,
+    settings: { ...map.settings, ...widgetSettings },
     layers: getLayers({ layers: activeLayers, layerSpec: map.layerSpec }),
     layersKeys: activeLayers
   };
 };
 
 class MapContainer extends PureComponent {
+  constructor(props) {
+    super(props);
+    this.runningLayers = [];
+  }
+
   componentDidMount() {
-    const { mapOptions, getLayerSpec, setMapSettings } = this.props;
+    const { layersKeys } = this.props;
     this.buildMap();
-    getLayerSpec();
-    setMapSettings(mapOptions);
+    this.setLayers(layersKeys);
   }
 
   componentWillReceiveProps(nextProps) {
     const {
-      isParentLoading,
       bounds,
       layersKeys,
       settings,
-      options
+      options,
+      geojson,
+      getLayerSpec,
+      cacheLoading
     } = nextProps;
-    if (isParentLoading !== this.props.isParentLoading && bounds) {
-      this.boundMap(nextProps.bounds);
-      this.setAreaHighlight();
-      this.updateLayers(layersKeys, this.props.layersKeys, settings);
-      this.setEvents();
+    const { zoom } = options;
+    if (cacheLoading !== this.props.cacheLoading) {
+      getLayerSpec();
+    }
+    // sync geostore with map
+    if (!isEmpty(bounds) && !isEqual(bounds, this.props.bounds)) {
+      this.boundMap(bounds);
+      this.setAreaHighlight(geojson);
+    } else if (!bounds && !isEqual(bounds, this.props.bounds)) {
+      this.resetMap();
     }
 
+    // sync layers with map
     if (
       !isEqual(layersKeys, this.props.layersKeys) ||
       !isEqual(settings, this.props.settings)
@@ -67,37 +77,55 @@ class MapContainer extends PureComponent {
       this.updateLayers(layersKeys, this.props.layersKeys, settings);
     }
 
-    if (this.props.options.zoom && this.props.options.zoom !== options.zoom) {
-      this.updateZoom(options.zoom);
+    // sync zoom with map
+    if (
+      zoom &&
+      this.props.options.zoom !== zoom &&
+      this.map.getZoom() !== zoom
+    ) {
+      this.map.setZoom(zoom);
     }
   }
 
-  setAreaHighlight() {
-    const { setMapZoom } = this.props;
+  buildMap() {
+    const { options } = this.props;
+    this.map = new google.maps.Map(document.getElementById('map'), options); // eslint-disable-line
+    this.map.mapTypes.set('GFWdefault', GFWdefault());
+    this.map.setMapTypeId(options.mapTypeId);
+    this.map.overlayMapTypes.setAt(10, GFWLabels());
+  }
 
+  boundMap(bounds) {
+    const { setMapZoom } = this.props;
+    const boundsMap = new google.maps.LatLngBounds(); // eslint-disable-line
+    bounds.forEach(item => {
+      boundsMap.extend(new google.maps.LatLng(item[1], item[0])); // eslint-disable-line
+    });
+    this.map.fitBounds(boundsMap);
+    setMapZoom({ value: this.map.getZoom() });
+  }
+
+  removeDataLayers() {
     this.map.data.forEach(feature => {
       this.map.data.remove(feature);
     });
-    const { areaHighlight } = this.props;
-    this.map.data.addGeoJson(areaHighlight);
+  }
+
+  resetMap() {
+    const { setMapZoom } = this.props;
+    const { center, zoom } = initialState.options;
+    setMapZoom({ value: zoom });
+    this.map.setCenter(center);
+    this.removeDataLayers();
+  }
+
+  setAreaHighlight(geojson) {
+    this.removeDataLayers();
+    this.map.data.addGeoJson(geojson);
     this.map.data.setStyle({
       strokeWeight: 1.5,
       stroke: '#333',
       fillColor: 'transparent'
-    });
-    setMapZoom({
-      value: this.map.getZoom(),
-      sum: false
-    });
-  }
-
-  setEvents() {
-    this.map.addListener('zoom_changed', () => {
-      const { setMapZoom } = this.props;
-      setMapZoom({
-        value: this.map.getZoom(),
-        sum: false
-      });
     });
   }
 
@@ -122,34 +150,38 @@ class MapContainer extends PureComponent {
     if (layers && layers.length) {
       layers.forEach((slug, index) => {
         const layerSettings = { ...layerSpec[slug], ...settings };
-        const layer = new Layers[slug](this.map, layerSettings);
-        layer.getLayer().then(res => {
-          this.map.overlayMapTypes.setAt(index, res);
+        const newLayer = new Layers[slug](this.map, layerSettings);
+        newLayer.getLayer().then(res => {
+          const runningLayerIndex = findIndex(
+            this.runningLayers,
+            d => d.slug === slug
+          );
+          if (
+            runningLayerIndex !== -1 &&
+            this.runningLayers[runningLayerIndex].layer.updateTiles
+          ) {
+            const { layer } = this.runningLayers[runningLayerIndex];
+            layer.setOptions(res.options);
+            if (layer.updateTilesEnable) {
+              layer.updateTiles();
+            } else {
+              this.setRunningLayer(index, slug, res);
+            }
+          } else {
+            this.setRunningLayer(index, slug, res);
+          }
         });
       });
     }
   };
 
-  updateZoom(zoom) {
-    this.map.setZoom(zoom);
-  }
-
-  buildMap() {
-    const { mapOptions } = this.props;
-    this.map = new google.maps.Map(document.getElementById('map'), mapOptions); // eslint-disable-line
-    this.map.mapTypes.set('GFWdefault', GFWdefault());
-    this.map.setMapTypeId(mapOptions.mapTypeId);
-    this.map.overlayMapTypes.setAt(10, GFWLabels());
-  }
-
-  boundMap() {
-    const { bounds } = this.props;
-    const boundsMap = new google.maps.LatLngBounds(); // eslint-disable-line
-    bounds.forEach(item => {
-      boundsMap.extend(new google.maps.LatLng(item[1], item[0])); // eslint-disable-line
-    });
-    this.map.fitBounds(boundsMap);
-  }
+  setRunningLayer = (index, slug, layer) => {
+    this.runningLayers[index] = {
+      slug,
+      layer
+    };
+    this.map.overlayMapTypes.setAt(index, this.runningLayers[index].layer);
+  };
 
   render() {
     return createElement(MapComponent, {
@@ -159,17 +191,17 @@ class MapContainer extends PureComponent {
 }
 
 MapContainer.propTypes = {
-  isParentLoading: PropTypes.bool,
   layerSpec: PropTypes.object.isRequired,
-  bounds: PropTypes.array.isRequired,
+  bounds: PropTypes.array,
   layersKeys: PropTypes.array,
   settings: PropTypes.object,
   options: PropTypes.object,
-  mapOptions: PropTypes.object.isRequired,
   getLayerSpec: PropTypes.func.isRequired,
   setMapZoom: PropTypes.func.isRequired,
-  setMapSettings: PropTypes.func.isRequired,
-  areaHighlight: PropTypes.object
+  geojson: PropTypes.object,
+  cacheLoading: PropTypes.bool
 };
+
+export { reducers, initialState, actions };
 
 export default connect(mapStateToProps, actions)(MapContainer);

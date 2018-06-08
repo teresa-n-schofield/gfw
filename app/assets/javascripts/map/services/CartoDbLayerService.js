@@ -1,35 +1,34 @@
-define([
-  'Class', 'uri',
-  'map/services/DataService'
-], function (Class, UriTemplate, ds) {
+define(['Class', 'uri', 'map/services/DataService'], (
+  Class,
+  UriTemplate,
+  ds
+) => {
+  const REQUEST_ID = 'CartoDbLayerService:fetchLayerConfig';
 
-  'use strict';
+  const URL = 'https://wri-01.carto.com/api/v1/map?stat_tag=API';
 
-  var REQUEST_ID = 'CartoDbLayerService:fetchLayerConfig';
-
-  var URL = 'http://wri-01.cartodb.com/api/v1/map?stat_tag=API';
-
-  var CartoDbLayerService = Class.extend({
-
-    init: function(sql, cartocss) {
+  const CartoDbLayerService = Class.extend({
+    init(sql, cartocss) {
       this.config = {
-        version: "1.2.0",
-        layers: [{
-          type: "cartodb",
-          options: {
-            sql: sql,
-            cartocss: cartocss,
-            cartocss_version: "2.3.0"
+        version: '1.2.0',
+        layers: [
+          {
+            type: 'cartodb',
+            options: {
+              sql,
+              cartocss,
+              cartocss_version: '2.3.0'
+            }
           }
-        }]
+        ]
       };
 
       this._defineRequests();
     },
 
-    _defineRequests: function() {
-      var config = {
-        cache: {type: 'persist', duration: 1, unit: 'days'},
+    _defineRequests() {
+      const config = {
+        cache: { type: 'persist', duration: 1, unit: 'days' },
         url: URL,
         type: 'POST',
         dataType: 'json',
@@ -39,10 +38,10 @@ define([
       ds.define(REQUEST_ID, config);
     },
 
-    fetchLayerConfig: function() {
-      var deferred = new $.Deferred();
+    fetchLayerConfig() {
+      const deferred = new $.Deferred();
 
-      var config = {
+      const config = {
         resourceId: REQUEST_ID,
         data: JSON.stringify(this.config),
         success: deferred.resolve,
@@ -53,9 +52,7 @@ define([
 
       return deferred.promise();
     }
-
   });
 
   return CartoDbLayerService;
-
 });

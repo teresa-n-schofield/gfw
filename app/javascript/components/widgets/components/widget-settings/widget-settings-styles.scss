@@ -1,0 +1,54 @@
+@import '~styles/settings.scss';
+
+.c-widget-settings {
+  width: rem(250px);
+  background-color: $white;
+  padding: rem(25px) rem(25px) rem(10px);
+
+  > div {
+    margin-bottom: rem(20px);
+  }
+
+  .intersections {
+    border-bottom: solid 1px $border;
+
+    > div {
+      margin-bottom: rem(20px);
+    }
+  }
+
+  .title {
+    font-size: rem(14px);
+    color: $slate;
+  }
+
+  .years-select {
+    .label {
+      display: block;
+      margin-bottom: rem(5px);
+      text-align: left;
+      font-weight: 400;
+      font-size: rem(13px);
+    }
+
+    .select-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+  }
+
+  .canopy-select {
+    margin-top: rem(10px);
+
+    &.threshold-border {
+      border-top: solid 1px $border;
+      padding-top: rem(15px);
+    }
+
+    .dd__wrapper {
+      max-width: rem(85px);
+    }
+  }
+}

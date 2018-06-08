@@ -34,7 +34,7 @@ $w-control: 44px;
           position: relative;
           @media (min-width: $br-mobileMap){
             float: none;
-            width: 33.33333%;
+            width: 50%;
 
             &:first-child{
               border-left: none;
@@ -185,7 +185,7 @@ $w-control: 44px;
         position: fixed;
         background: $white;
         z-index: 2001;
-        bottom: 50px;
+        bottom: 0;
         left: 0;
         width: 100%;
         padding: 10px;
@@ -422,4 +422,10 @@ $w-control: 44px;
       }
     }
   }
+}
+
+#cartodb-gmaps-attribution {
+  bottom: 50px !important;
+  background: transparent !important;
+  z-index: 15 !important;
 }

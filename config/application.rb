@@ -5,6 +5,7 @@ require File.expand_path('../boot', __FILE__)
 require "action_controller/railtie"
 require "action_mailer/railtie"
 require "sprockets/railtie"
+require 'sitemap_generator/tasks'
 # require "active_model"
 # require "rails/test_unit/railtie"
 
@@ -64,6 +65,6 @@ module Gfw
     config.action_controller.per_form_csrf_tokens = true
     config.action_controller.forgery_protection_origin_check = true
 
-    ActiveSupport.halt_callback_chains_on_return_false = false
+    config.cache_store = :redis_store, "redis://localhost:6379/0/cache"
   end
 end

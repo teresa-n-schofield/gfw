@@ -18,6 +18,10 @@ gem 'fog'
 gem 'rmagick', :require => false
 gem 'mini_magick'
 gem 'unf'
+gem 'sitemap_generator'
+gem 'redis'
+gem 'redis-namespace'
+gem 'redis-rails'
 
 # requirejs
 gem 'erubis'
@@ -38,7 +42,7 @@ gem 'nokogiri', '~> 1.8.2'
 group :development, :test do
   gem 'rspec-rails', '~> 3.5.2'
   gem 'show_me_the_cookies'
-  gem 'factory_girl_rails'
+  gem 'factory_bot_rails'
   gem 'shoulda-matchers'
   gem 'database_cleaner'
   gem 'byebug'

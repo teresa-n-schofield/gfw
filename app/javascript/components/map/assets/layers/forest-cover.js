@@ -5,7 +5,7 @@ const OPTIONS = {
   threshold: 30,
   dataMaxZoom: 12,
   urlTemplate:
-    'http://earthengine.google.org/static/hansen_2014/gfw_loss_tree_year_{threshold}_2014/{z}/{x}/{y}.png'
+    'https://earthengine.google.org/static/hansen_2014/gfw_loss_tree_year_{threshold}_2014/{z}/{x}/{y}.png'
 };
 
 class ForestCover extends Canvas {
@@ -49,6 +49,13 @@ class ForestCover extends Canvas {
       .replace('{y}', y)
       .replace('{z}', z)
       .replace('{threshold}', this.options.threshold);
+  }
+
+  setOptions(options) {
+    if (this.options.threshold !== options.threshold) {
+      this.updateTilesEnable = false;
+    }
+    this.options = { ...this.options, ...options };
   }
 }
 

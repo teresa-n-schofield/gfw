@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Application entry point.
  */
@@ -29,11 +30,12 @@ require([
   'map/views/NavMobileView',
   'map/views/GuideView',
   'map/views/controls/GuideButtonView',
+  'map/views/ReactMapMiddleView',
   'views/HeaderView',
   'views/FooterView',
   'views/NotificationsView',
   'views/DownloadView'
-], (
+], function(
   $,
   _,
   Class,
@@ -56,16 +58,20 @@ require([
   NavMobileView,
   GuideView,
   GuideButtonView,
+  ReactMapMiddleView,
   HeaderView,
   FooterView,
   NotificationsView,
   DownloadView
-) => {
-  const MapPage = Class.extend({
+) {
+  var MapPage = Class.extend({
     $el: $('body'),
 
-    init() {
-      const router = new Router(this);
+    init: function() {
+      window.App = {
+        Views: {}
+      };
+      var router = new Router(this);
       this._cartodbHack();
       this._handlebarsPlugins();
       this._googleMapsHelper();
@@ -76,35 +82,40 @@ require([
     /**
      * Initialize the map by starting the history.
      */
-    _initApp() {
+    _initApp: function() {
       if (!Backbone.History.started) {
         Backbone.history.start({ pushState: true });
       }
+      window.dispatchEvent(new Event('mapLoaded'));
     },
 
-    _fetchData() {
+    _fetchData: function() {
       // I was thinking that, without a map, an array of countries and an array of layers
       // we shouldn't create any view.
       countryService
         .getCountries()
-        .then(results => {
-          this.countries = results;
-          this._initViews();
-        })
-        .catch(e => {
-          console.warn(e);
-          // Fallback when request is timing out
-          this.countries = FallbackDataHelper.getCountryNames();
-          this._initViews();
-        });
+        .then(
+          function(results) {
+            this.countries = results;
+            this._initViews();
+          }.bind(this)
+        )
+        .catch(
+          function(e) {
+            console.warn(e);
+            // Fallback when request is timing out
+            this.countries = FallbackDataHelper.getCountryNames();
+            this._initViews();
+          }.bind(this)
+        );
     },
     /**
      * Initialize Application Views.
      * CAUTION: Don't change the order of initanciations if
      * you are not completely sure.
      */
-    _initViews() {
-      const map = new MapView();
+    _initViews: function() {
+      var map = new MapView();
       this.map = map.map;
 
       new MapControlsView(this.map, this.countries);
@@ -122,6 +133,7 @@ require([
       new NotificationsView(this.map, this.countries);
       new GuideView(this.map, this.countries);
       new GuideButtonView(this.map, this.countries);
+      window.App.Views.ReactMapMiddleView = new ReactMapMiddleView(this.map);
 
       this._initApp();
     },
@@ -129,19 +141,19 @@ require([
     /**
      * Cartodb Handlebars hack.
      */
-    _cartodbHack() {
+    _cartodbHack: function() {
       cdb.core.Template.compilers = _.extend(cdb.core.Template.compilers, {
         handlebars:
           typeof Handlebars === 'undefined' ? null : Handlebars.compile
       });
     },
 
-    _handlebarsPlugins() {
-      Handlebars.registerHelper('firstLetter', text =>
-        text.charAt(0).toUpperCase()
-      );
+    _handlebarsPlugins: function() {
+      Handlebars.registerHelper('firstLetter', function(text) {
+        return text.charAt(0).toUpperCase();
+      });
 
-      Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+      Handlebars.registerHelper('ifCond', function(v1, operator, v2, options) {
         switch (operator) {
           case '==':
             return v1 == v2 ? options.fn(this) : options.inverse(this);
@@ -167,15 +179,15 @@ require([
       });
     },
 
-    _googleMapsHelper() {
+    _googleMapsHelper: function() {
       if (!google.maps.Polygon.prototype.getBounds) {
-        google.maps.Polygon.prototype.getBounds = function () {
-          const bounds = new google.maps.LatLngBounds();
-          const paths = this.getPaths();
-          let path;
-          for (let i = 0; i < paths.getLength(); i++) {
+        google.maps.Polygon.prototype.getBounds = function() {
+          var bounds = new google.maps.LatLngBounds();
+          var paths = this.getPaths();
+          var path;
+          for (var i = 0; i < paths.getLength(); i++) {
             path = paths.getAt(i);
-            for (let ii = 0; ii < path.getLength(); ii++) {
+            for (var ii = 0; ii < path.getLength(); ii++) {
               bounds.extend(path.getAt(ii));
             }
           }
@@ -184,7 +196,7 @@ require([
       }
     },
 
-    _configPromise() {
+    _configPromise: function() {
       Promise.config({
         // Enable warnings
         warnings: false,

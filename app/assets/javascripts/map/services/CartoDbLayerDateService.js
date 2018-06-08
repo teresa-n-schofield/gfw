@@ -1,56 +1,58 @@
-define([
-  'Class', 'uri', 'bluebird', 'moment',
-  'map/services/DataService'
-], function (Class, UriTemplate, Promise, moment, ds) {
+define(
+  ['Class', 'uri', 'bluebird', 'moment', 'map/services/DataService'],
+  (Class, UriTemplate, Promise, moment, ds) => {
+    const REQUEST_ID = 'CartoDbLayerDateService:fetchLayerDates';
+    const URL = 'https://wri-01.carto.com/api/v2/sql{?q}';
 
-  'use strict';
+    const CartoDbLayerDateService = Class.extend({
+      init(options) {
+        this.dateAttribute = options.dateAttribute;
+        this.table = options.table;
 
-  var REQUEST_ID = 'CartoDbLayerDateService:fetchLayerDates';
-  var URL = 'https://wri-01.cartodb.com/api/v2/sql{?q}';
+        this._defineRequests();
+      },
 
-  var CartoDbLayerDateService = Class.extend({
+      _defineRequests() {
+        let sql =
+            `SELECT MIN(${
+              this.dateAttribute
+            }) AS min_date, MAX(${
+              this.dateAttribute
+            }) AS max_date FROM ${
+              this.table}`,
+          url = new UriTemplate(URL).fillFromObject({ q: sql });
 
-    init: function(options) {
-      this.dateAttribute = options.dateAttribute;
-      this.table = options.table;
-
-      this._defineRequests();
-    },
-
-    _defineRequests: function() {
-      var sql = 'SELECT MIN('+this.dateAttribute+') AS min_date, MAX('+this.dateAttribute+') AS max_date FROM '+this.table,
-          url = new UriTemplate(URL).fillFromObject({q: sql});
-
-      var endOfDay = moment().endOf('day'),
+        let endOfDay = moment().endOf('day'),
           secondsToEndOfDay = endOfDay.diff(moment()) / 1000;
 
-      ds.define(REQUEST_ID, {
-        cache: {type: 'persist', duration: secondsToEndOfDay, unit: 'seconds'},
-        url: url,
-        type: 'GET'
-      });
-    },
+        ds.define(REQUEST_ID, {
+          cache: {
+            type: 'persist',
+            duration: secondsToEndOfDay,
+            unit: 'seconds'
+          },
+          url,
+          type: 'GET'
+        });
+      },
 
-    fetchLayerConfig: function() {
-      return new Promise(function(resolve, reject) {
+      fetchLayerConfig() {
+        return new Promise(((resolve, reject) => {
+          const onSuccess = function (response) {
+            resolve(response.rows[0]);
+          };
 
-      var onSuccess = function(response) {
-        resolve(response.rows[0]);
-      };
+          const requestConfig = {
+            resourceId: REQUEST_ID,
+            success: onSuccess,
+            error: reject
+          };
 
-      var requestConfig = {
-        resourceId: REQUEST_ID,
-        success: onSuccess,
-        error: reject
-      };
+          ds.request(requestConfig);
+        }));
+      }
+    });
 
-      ds.request(requestConfig);
-
-      });
-    }
-
-  });
-
-  return CartoDbLayerDateService;
-
-});
+    return CartoDbLayerDateService;
+  }
+);

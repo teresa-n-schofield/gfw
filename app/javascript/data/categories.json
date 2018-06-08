@@ -1,0 +1,26 @@
+[
+  {
+    "label": "Summary",
+    "value": "summary"
+  },
+  {
+    "label": "Land cover",
+    "value": "land-cover"
+  },
+  {
+    "label": "Forest change",
+    "value": "forest-change"
+  },
+  {
+    "label": "Conservation",
+    "value": "conservation"
+  },
+  {
+    "label": "People",
+    "value": "people"
+  },
+  {
+    "label": "Climate",
+    "value": "climate"
+  }
+]

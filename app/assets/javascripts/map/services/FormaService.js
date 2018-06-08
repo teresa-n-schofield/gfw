@@ -1,66 +1,75 @@
-define([
-  'Class',
-  'uri',
-  'bluebird',
-  'map/services/DataService'
-], function(Class, UriTemplate, Promise, ds) {
+define(['Class', 'uri', 'bluebird', 'map/services/DataService'], (
+  Class,
+  UriTemplate,
+  Promise,
+  ds
+) => {
+  const GET_TILE_URL_ID = 'FormaService:getTilesUrl';
+  const GET_TILE_URL = 'https://api-dot-forma-250.appspot.com/tiles/latest';
+  const GET_DATES_ID = 'FormaService:getDates';
+  const GET_DATES_URL = 'https://api.forma-250.appspot.com/dates';
 
-  'use strict';
+  const FormaService = Class.extend({
+    getTileUrl() {
+      return new Promise(
+        ((resolve, reject) => {
+          this.defineRequest(GET_TILE_URL_ID, GET_TILE_URL, {
+            type: 'persist',
+            duration: 1,
+            unit: 'days'
+          });
 
-  var GET_TILE_URL_ID = 'FormaService:getTilesUrl';
-  var GET_TILE_URL = 'http://api-dot-forma-250.appspot.com/tiles/latest';
-  var GET_DATES_ID = 'FormaService:getDates';
-  var GET_DATES_URL = 'http://api.forma-250.appspot.com/dates';
+          const requestConfig = {
+            resourceId: GET_TILE_URL_ID,
+            success(res, status) {
+              resolve(res, status);
+            },
+            error(errors) {
+              reject(errors);
+            }
+          };
 
-  var FormaService = Class.extend({
-    getTileUrl: function() {
-      return new Promise(function(resolve, reject) {
-        this.defineRequest(GET_TILE_URL_ID, GET_TILE_URL, { type: 'persist', duration: 1, unit: 'days' });
-
-        var requestConfig = {
-          resourceId: GET_TILE_URL_ID,
-          success: function(res, status) {
-            resolve(res, status);
-          },
-          error: function(errors) {
-            reject(errors);
-          }
-        };
-
-        ds.request(requestConfig);
-      }.bind(this));
+          ds.request(requestConfig);
+        })
+      );
     },
 
-    getDates: function() {
-      return new Promise(function(resolve, reject) {
-        this.defineRequest(GET_DATES_ID, GET_DATES_URL, { type: 'persist', duration: 1, unit: 'days' });
+    getDates() {
+      return new Promise(
+        ((resolve, reject) => {
+          this.defineRequest(GET_DATES_ID, GET_DATES_URL, {
+            type: 'persist',
+            duration: 1,
+            unit: 'days'
+          });
 
-        var requestConfig = {
-          resourceId: GET_DATES_ID,
-          success: function(res, status) {
-            resolve(res, status);
-          },
-          error: function(errors) {
-            reject(errors);
-          }
-        };
+          const requestConfig = {
+            resourceId: GET_DATES_ID,
+            success(res, status) {
+              resolve(res, status);
+            },
+            error(errors) {
+              reject(errors);
+            }
+          };
 
-        ds.request(requestConfig);
-      }.bind(this));
+          ds.request(requestConfig);
+        })
+      );
     },
 
-    defineRequest: function (id, url, cache) {
+    defineRequest(id, url, cache) {
       ds.define(id, {
         cache: false,
-        url: url,
+        url,
         type: 'GET',
         dataType: 'json',
-        decoder: function ( data, status, xhr, success, error ) {
-          if ( status === "success" ) {
-            success( data, xhr );
-          } else if ( status === "fail" || status === "error" ) {
+        decoder(data, status, xhr, success, error) {
+          if (status === 'success') {
+            success(data, xhr);
+          } else if (status === 'fail' || status === 'error') {
             error(xhr.statusText);
-          } else if ( status !== "abort") {
+          } else if (status !== 'abort') {
             error(xhr.statusText);
           }
         }
@@ -69,5 +78,4 @@ define([
   });
 
   return new FormaService();
-
 });

@@ -1,25 +1,22 @@
-define([
-  'Class', 'bluebird',
-  'map/services/DataService'
-], function (Class, Promise, ds) {
+define(['Class', 'bluebird', 'map/services/DataService'], (
+  Class,
+  Promise,
+  ds
+) => {
+  const REQUEST_ID = 'CartoDbNamedMapService:fetchLayerMap';
+  const URL = 'https://wri-01.carto.com/api/v1/map/named/';
 
-  'use strict';
-
-  var REQUEST_ID = 'CartoDbNamedMapService:fetchLayerMap';
-  var URL = 'https://wri-01.cartodb.com/api/v1/map/named/';
-
-  var CartoDbNamedMapService = Class.extend({
-
-    init: function(options) {
+  const CartoDbNamedMapService = Class.extend({
+    init(options) {
       this.namedMap = options.namedMap;
       this.table = options.table;
 
       this._defineRequests();
     },
 
-    _defineRequests: function() {
+    _defineRequests() {
       ds.define(REQUEST_ID, {
-        cache: {type: 'persist', duration: 1, unit: 'days'},
+        cache: { type: 'persist', duration: 1, unit: 'days' },
         url: URL + this.namedMap,
         type: 'POST',
         dataType: 'json',
@@ -27,27 +24,25 @@ define([
       });
     },
 
-    fetchLayerConfig: function() {
-      return new Promise(function(resolve, reject) {
+    fetchLayerConfig() {
+      return new Promise(
+        ((resolve, reject) => {
+          const layerConfig = {
+            table: this.table
+          };
 
-      var layerConfig = {
-        table: this.table
-      };
+          const requestConfig = {
+            resourceId: REQUEST_ID,
+            data: JSON.stringify(layerConfig),
+            success: resolve,
+            error: reject
+          };
 
-      var requestConfig = {
-        resourceId: REQUEST_ID,
-        data: JSON.stringify(layerConfig),
-        success: resolve,
-        error: reject
-      };
-
-      ds.request(requestConfig);
-
-      }.bind(this));
+          ds.request(requestConfig);
+        })
+      );
     }
-
   });
 
   return CartoDbNamedMapService;
-
 });
