@@ -33,9 +33,6 @@ class CountryDataProvider extends PureComponent {
 
     if (cacheLoading !== this.props.cacheLoading) {
       getCountries(lang || 'en');
-      if (lang !== this.props.lang) {
-        getCountries(lang || 'en');
-      }
       if (country) {
         getRegions(country);
         getGeostore(country, region, subRegion);
@@ -44,6 +41,9 @@ class CountryDataProvider extends PureComponent {
         getSubRegions(country, region);
       }
       getCountryLinks();
+    }
+    if (lang !== this.props.lang) {
+      getCountries(lang || 'en');
     }
 
     if (!country && country !== this.props.location.country) {
