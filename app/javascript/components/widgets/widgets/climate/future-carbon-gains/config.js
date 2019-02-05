@@ -1,9 +1,6 @@
 export default {
   widget: 'futureCarbonGains',
-  title: {
-    initial: 'Annual tree cover loss by dominant driver in {location}',
-    global: 'Global annual tree cover loss by dominant driver'
-  },
+  title: 'Potential tree biomass gain',
   categories: ['climate'],
   colors: 'climate',
   types: ['country'],

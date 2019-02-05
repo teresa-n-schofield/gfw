@@ -7,6 +7,7 @@ const getData = state => state.data || null;
 const getSettings = state => state.settings || null;
 const getLocationName = state => state.locationName || null;
 const getSentences = state => state.config && state.config.sentences;
+const getTitle = state => state.config && state.config.title;
 const getColors = state => state.colors || null;
 
 export const parseData = createSelector(
@@ -107,14 +108,9 @@ export const parseSentence = createSelector(
   }
 );
 
-export const parseTitle = createSelector(
-  [],
-  () => 'Potential tree biomass gain'
-);
-
 export default createStructuredSelector({
   data: parseData,
   dataConfig: parseConfig,
   sentence: parseSentence,
-  title: parseTitle
+  title: getTitle
 });
