@@ -1,7 +1,7 @@
 import { getAdmin } from 'services/forest-data';
 import axios from 'axios';
-import maxBy from 'lodash/maxBy';
 import range from 'lodash/range';
+import groupBy from 'lodash/groupBy';
 
 export default ({ params }) =>
   axios
@@ -14,11 +14,24 @@ export default ({ params }) =>
         const adminData = admin.data && admin.data.data;
         const plantData = plantations.data && plantations.data.data;
 
-        const maxYear = Math.max(
-          maxBy(adminData, 'year').year,
-          maxBy(plantData, 'year').year
+        const adminByYear = groupBy(
+          adminData.reduce((acc, d) => acc.concat(d.year_data), []),
+          'year'
+        );
+        const plantByYear = groupBy(
+          plantData.reduce((acc, d) => acc.concat(d.year_data), []),
+          'year'
         );
 
-        return { adminData, plantData, years: range(2013, maxYear + 1) };
+        const maxYear = Math.max(
+          Object.keys(adminByYear),
+          Object.keys(plantByYear)
+        );
+
+        return {
+          adminData: adminByYear,
+          plantData: plantByYear,
+          years: range(2013, maxYear + 1)
+        };
       })
     );

@@ -16,13 +16,23 @@ export const parseData = createSelector(
     const { adminData, plantData } = data;
     const { loss } = colors;
 
-    const adminTotal = adminData
-      .filter(d => d.year >= settings.startYear && d.year <= settings.endYear)
-      .reduce((acc, next) => (next.emissions ? acc + next.emissions : acc), 0);
+    const adminTotal = Object.keys(adminData)
+      .filter(year => year >= settings.startYear && year <= settings.endYear)
+      .reduce(
+        (acc, year) =>
+          acc +
+          adminData[year].reduce((total, obj) => total + obj.emissions, 0),
+        0
+      );
 
-    const plantTotal = plantData
-      .filter(d => d.year >= settings.startYear && d.year <= settings.endYear)
-      .reduce((acc, next) => (next.emissions ? acc + next.emissions : acc), 0);
+    const plantTotal = Object.keys(plantData)
+      .filter(year => year >= settings.startYear && year <= settings.endYear)
+      .reduce(
+        (acc, year) =>
+          acc +
+          plantData[year].reduce((total, obj) => total + obj.emissions, 0),
+        0
+      );
     const totalArea = adminTotal + plantTotal;
     const parsedData = [
       {

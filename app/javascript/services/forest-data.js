@@ -44,7 +44,7 @@ const SQL_QUERIES = {
     'SELECT iso, polyname FROM data WHERE polyname IN ({indicators}) GROUP BY iso, polyname ORDER BY polyname, iso',
   globalLandCover: 'SELECT * FROM global_land_cover_adm2 WHERE {location}',
   admin:
-    "SELECT polyname, year_data.year as year, SUM(year_data.area_loss) as area, SUM(year_data.emissions) as emissions from {dataset} WHERE {location} AND polyname = '{indicator}' AND thresh= {threshold} GROUP BY {grouping}"
+    "SELECT polyname, iso, bound1, bound2, thresh, adm1, adm2, year_data as data from dataset WHERE {location} AND polyname = '{indicator}' AND thresh={threshold}"
 };
 
 const getExtentYear = year =>
@@ -306,13 +306,6 @@ export const getAdmin = ({ adm0, adm1, adm2, threshold, indicator }) => {
   const url = `${REQUEST_URL}${SQL_QUERIES.admin}`
     .replace('{location}', getLocationQuery(adm0, adm1, adm2))
     .replace('{threshold}', threshold)
-    .replace('{dataset}', DATASET)
-    .replace('{indicator}', getIndicator(indicator))
-    .replace(
-      '{grouping}',
-      indicator
-        ? 'polyname, iso, nested(year_data.year)'
-        : 'bound1, polyname, iso, nested(year_data.year)'
-    );
+    .replace('{indicator}', getIndicator(indicator));
   return request.get(url);
 };
