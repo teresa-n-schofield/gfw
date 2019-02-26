@@ -51,7 +51,7 @@ class ModalMeta extends PureComponent {
                 {tableData &&
                   Object.keys(tableData).map(
                     key =>
-                      (tableData[key] ? (
+                      tableData[key] ? (
                         <div key={key} className="table-row">
                           <div
                             className="title-column"
@@ -61,7 +61,7 @@ class ModalMeta extends PureComponent {
                             {this.parseContent(tableData[key])}
                           </div>
                         </div>
-                      ) : null)
+                      ) : null
                   )}
               </div>
               {overview && (

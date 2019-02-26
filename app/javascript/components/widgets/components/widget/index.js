@@ -42,6 +42,7 @@ class WidgetContainer extends Component {
       'weeks',
       'page',
       'highlighted',
+      'percentile',
       'unit'
     ];
     let changedSetting = '';
