@@ -2,7 +2,7 @@
 
 .l-topics-page {
   .topic-content {
-    height: 100%;
+    height: calc(100% - 55px);
     display: flex;
     flex-direction: column;
     position: relative;
@@ -37,4 +37,19 @@
     flex-direction: column;
     justify-content: center;
   }
+}
+
+#fp-nav ul li {
+  margin: rem(20px);
+}
+
+#fp-nav ul li a span {
+  background-color: $grey-dark;
+  width: rem(8px);
+  height: rem(8px);
+  margin: -4px 0 0 -4px;
+}
+
+#fp-nav ul li a.active span {
+  background-color: $green-gfw;
 }
