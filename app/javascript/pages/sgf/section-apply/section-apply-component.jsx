@@ -27,14 +27,14 @@ class SectionAbout extends PureComponent {
               <li>- Journalism</li>
             </ul>
             <p className="text -paragraph -color-2 -light -spaced">
-              Listen to the 2019 GFW Grants and Fellowships Webinar (
+              Listen to the (
               <a
                 className="text -paragraph -color-4 -bold"
                 href="https://www.youtube.com/watch?v=ddDyu_l663k&feature=youtu.be"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                video link here
+                2019 GFW Grants and Fellowships Webinar
               </a>
               ).
             </p>
